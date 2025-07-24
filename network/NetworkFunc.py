@@ -2,8 +2,8 @@
 # @Time: 2025/3/6 14:34
 # @File : network_func.py
 # @Project : iatdrl2
-# @Description : TODO:
-# @Author : Your Name
+# @Description : 神经网络相关函数
+# @Author : Ke LI
 import torch
 import torch.nn as nn
 

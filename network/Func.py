@@ -2,8 +2,8 @@
 # @Time: 2025/3/6 20:35
 # @File : td3_func.py
 # @Project : iatdrl2
-# @Description : TODO:
-# @Author : Your Name
+# @Description : 生成和训练神经网络时必需的函数
+# @Author : Ke LI
 import platform
 import torch
 import torch.nn as nn
