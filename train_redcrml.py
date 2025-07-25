@@ -16,7 +16,7 @@ if __name__ == '__main__':
     # 2、创建算法对象，Experience Replay为Curriculum型
     old_params_path = None  # 'PBA/DropNav-250106_173937'  # 网络历史参数路径
     rl1, rl2, rl3 = fast_create_potd3_rl_group(
-        tmp_env, train_name, MAX_MEM, BATCH_SIZE, [10, 15, 12],
+        tmp_env, train_name, MAX_MEM, BATCH_SIZE, [15, 15, 12],
         [128, 128, 4, 128, 2, 64, 4, 256, 128, 128, 4, 128, 2, 4, 256],
         [128, 128, 4, 128, 2, 64, 4, 256, 128, 128, 4, 128, 2, 4, 256],
         [128, 128, 4, 128, 2, 64, 4, 256, 128, 128, 4, 128, 2, 4, 256],
