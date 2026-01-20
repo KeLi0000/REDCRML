@@ -8,7 +8,7 @@ from typing import List
 import numpy as np
 from gymdynadrop.envs.drop_sim_core import SimModelState
 from gymdynadrop.envs.dyna_drop_nav import DynaDropNav
-from potd3 import PartialObservedTwinDelayedDeepDeterministicPolicyGradient as PoTd3
+from redcrml import REDCRML
 
 from exp_init import check_dir_path
 
@@ -33,12 +33,12 @@ def save_pkl_files(pkl_path: str, pkl_action, pkl_reward, pkl_state, pkl_other):
         print(pkl_path + '数据保存成功！')
 
 
-def fast_create_potd3_rl_group(env: DynaDropNav, name, mem_size, batch_size, state_seq_len: List, rl0_net_struct: List,
+def fast_create_REDCRML_rl_group(env: DynaDropNav, name, mem_size, batch_size, state_seq_len: List, rl0_net_struct: List,
                                rl1_net_struct: List, rl2_net_struct: List, memory_type: str = 'Curriculum',
-                               params_path=None) -> List[PoTd3]:
+                               params_path=None) -> List[REDCRML]:
     rl0, rl1, rl2 = None, None, None
     if memory_type == 'Curriculum':
-        rl0 = PoTd3(
+        rl0 = REDCRML(
             mission_path=name, action_dim=env.get_action_dim(1), action_bound=env.guidance_action_space.high,
             normal_state_dim=env.get_sel_task_normal_state_dim(), seq_state_dim=env.get_sel_task_seq_state_dim(1),
             state_seq_len=state_seq_len[0], critic_input_s1_units=rl0_net_struct[0],
@@ -56,7 +56,7 @@ def fast_create_potd3_rl_group(env: DynaDropNav, name, mem_size, batch_size, sta
             memory_size=mem_size, noise_type='AN', an_noise_params=np.array([1.0, 0.01, 1.001]),
             batch_size=batch_size, file_path='rl0', req_save_params=True
         )
-        rl1 = PoTd3(
+        rl1 = REDCRML(
             mission_path=name, action_dim=env.get_action_dim(2), action_bound=env.guidance_action_space.high,
             normal_state_dim=env.get_sel_task_normal_state_dim(), seq_state_dim=env.get_sel_task_seq_state_dim(2),
             state_seq_len=state_seq_len[1], critic_input_s1_units=rl1_net_struct[0],
@@ -75,7 +75,7 @@ def fast_create_potd3_rl_group(env: DynaDropNav, name, mem_size, batch_size, sta
             noise_type='AN', an_noise_params=np.array([1.0, 0.01, 1.001]),
             batch_size=int(batch_size / 2), file_path='rl1', req_save_params=True
         )
-        rl2 = PoTd3(
+        rl2 = REDCRML(
             mission_path=name, action_dim=env.get_action_dim(3), action_bound=env.aim_action_space.high,
             normal_state_dim=env.get_sel_task_normal_state_dim(), seq_state_dim=env.get_sel_task_seq_state_dim(3),
             state_seq_len=state_seq_len[2], critic_input_s1_units=rl2_net_struct[0],
@@ -94,7 +94,7 @@ def fast_create_potd3_rl_group(env: DynaDropNav, name, mem_size, batch_size, sta
             batch_size=batch_size, file_path='rl2', req_save_params=True
         )
     elif memory_type == 'Prioritized':
-        rl0 = PoTd3(
+        rl0 = REDCRML(
             mission_path=name, action_dim=env.get_action_dim(1), action_bound=env.guidance_action_space.high,
             normal_state_dim=env.get_sel_task_normal_state_dim(), seq_state_dim=env.get_sel_task_seq_state_dim(1),
             state_seq_len=state_seq_len[0], critic_input_s1_units=rl0_net_struct[0],
@@ -113,7 +113,7 @@ def fast_create_potd3_rl_group(env: DynaDropNav, name, mem_size, batch_size, sta
             noise_type='AN', an_noise_params=np.array([1.0, 0.01, 1.001]),
             batch_size=batch_size, file_path='rl0', req_save_params=True
         )
-        rl1 = PoTd3(
+        rl1 = REDCRML(
             mission_path=name, action_dim=env.get_action_dim(2), action_bound=env.guidance_action_space.high,
             normal_state_dim=env.get_sel_task_normal_state_dim(), seq_state_dim=env.get_sel_task_seq_state_dim(2),
             state_seq_len=state_seq_len[1], critic_input_s1_units=rl1_net_struct[0],
@@ -132,7 +132,7 @@ def fast_create_potd3_rl_group(env: DynaDropNav, name, mem_size, batch_size, sta
             noise_type='AN', an_noise_params=np.array([1.0, 0.01, 1.001]),
             batch_size=int(batch_size / 2), file_path='rl1', req_save_params=True
         )
-        rl2 = PoTd3(
+        rl2 = REDCRML(
             mission_path=name, action_dim=env.get_action_dim(3), action_bound=env.aim_action_space.high,
             normal_state_dim=env.get_sel_task_normal_state_dim(), seq_state_dim=env.get_sel_task_seq_state_dim(3),
             state_seq_len=state_seq_len[2], critic_input_s1_units=rl2_net_struct[0],
@@ -158,12 +158,12 @@ def fast_create_potd3_rl_group(env: DynaDropNav, name, mem_size, batch_size, sta
     return [rl0, rl1, rl2]
 
 
-def save_model_params(rl_list: List[PoTd3]):
+def save_model_params(rl_list: List[REDCRML]):
     for rl in rl_list:
         rl.save_net_params()
 
 
-def train(env: DynaDropNav, rl: List[PoTd3], enable_async=False, enable_auto_aiming=False, mission_name=None,
+def train(env: DynaDropNav, rl: List[REDCRML], enable_async=False, enable_auto_aiming=False, mission_name=None,
           max_episodes=2000, learn_start_steps=1000, learn_eps=64, cer_update_eps=10, noise_eps=20):
     task_cnt = env.task_cnt
     assert env is not None, '环境参数未None，请传参！'
@@ -182,7 +182,7 @@ def train(env: DynaDropNav, rl: List[PoTd3], enable_async=False, enable_auto_aim
         task_step_cnt = [0 for _ in range(task_cnt)]
         obv = env.reset()
         for i_rl in range(3):
-            if type(rl[i_rl]) == PoTd3:
+            if type(rl[i_rl]) == REDCRML:
                 rl[i_rl].reset_seq()
         task_label = env.get_task_label()
         if i_episode % noise_eps == 0:

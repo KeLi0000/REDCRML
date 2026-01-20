@@ -14,10 +14,10 @@ from network.Func import CriticLoss
 
 from memory.Memory import ReplayBuffer
 from memory.SegmentTree import SumSegmentTree, MinSegmentTree
-from network import PoActorNetwork, PoCriticNetwork, device
+from network import BlpnActor, BlpnCritic, device
 
 
-class CurriculumReplayBuffer(ReplayBuffer):
+class MfteReplayBuffer(ReplayBuffer):
     def __init__(self, memory_size, batch_size, curriculum_omega: List[float], sp_lambda=0.5, alpha=0.6, beta0=0.4,
                  beta_inc=0.001, s_dim=0, a_dim=0, gamma=0.99, ubatch_size=1024):
         """
@@ -34,7 +34,7 @@ class CurriculumReplayBuffer(ReplayBuffer):
         :param gamma: 期望折扣系数
         :param ubatch_size: 更新时的batch大小
         """
-        super(CurriculumReplayBuffer, self).__init__(memory_size, batch_size)
+        super(MfteReplayBuffer, self).__init__(memory_size, batch_size)
         assert alpha > 0
         self._alpha = alpha
 
@@ -317,9 +317,9 @@ class CurriculumReplayBuffer(ReplayBuffer):
                 self._it_sum[item] = priority ** self._alpha
                 self._it_min[item] = priority ** self._alpha
 
-    def asynchronous_update(self, q_eval_nets: List[Union[PoCriticNetwork, CriticNetwork]],
-                            q_tgt_nets: List[Union[PoCriticNetwork, CriticNetwork]],
-                            a_net: Union[PoActorNetwork, ActorNetwork], blocking=False):
+    def asynchronous_update(self, q_eval_nets: List[Union[BlpnCritic, CriticNetwork]],
+                            q_tgt_nets: List[Union[BlpnCritic, CriticNetwork]],
+                            a_net: Union[BlpnActor, ActorNetwork], blocking=False):
         """
         使用multiprocessing，异步更新memory中样本的priority和SP Regularization
         :param blocking: 是否阻塞更新

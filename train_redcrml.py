@@ -11,7 +11,7 @@ TEST_EPISODES = 10
 if __name__ == '__main__':
     # 1、构造环境对象
     tmp_env = create_drop_env()
-    alg_name = 'TD3-RAC-CER'
+    alg_name = 'REDCRML'
     train_name = os.path.join(alg_name, datetime.now().strftime("%y%m%d_%H%M%S"))
     # 2、创建算法对象，Experience Replay为Curriculum型
     old_params_path = None  # 'PBA/DropNav-250106_173937'  # 网络历史参数路径
@@ -27,3 +27,4 @@ if __name__ == '__main__':
         learn_eps=100, noise_eps=200)
     # 4、保存网络参数
     save_model_params([rl1, rl2, rl3])
+    

@@ -9,7 +9,7 @@ from network.NetworkFunc import _reset_layer_weights_bias
 from network.Func import device
 
 
-class PoCriticNetwork(nn.Module):
+class BlpnCritic(nn.Module):
     def __init__(self, s1_fcn_input_dim: int, s1_fcn_input_units, s1_fcn_input_func, s2_lstm_input_dim: int,
                  s2_lstm_input_seq_len, s2_lstm_input_units, s2_lstm_input_layers_num, a_dim: int,
                  ah_lstm_input_seq_len, ah_lstm_input_units, ah_lstm_input_layers_num, an_fcn_input_units,
@@ -115,7 +115,7 @@ class PoCriticNetwork(nn.Module):
         self._output_layer = self._output_layer.to(device)
 
 
-class PoActorNetwork(nn.Module):
+class BlpnActor(nn.Module):
     def __init__(self, s1_fcn_dim: int, s1_fcn_input_units, s2_lstm_dim: int, s2_lstm_input_units,
                  s2_lstm_input_seq_len, s2_lstm_input_layers_num, a_dim: int, ah_lstm_input_units,
                  ah_lstm_input_seq_len, ah_lstm_input_layers_num, middle_layers_num, middle_layers_units,
@@ -225,13 +225,13 @@ class PoActorNetwork(nn.Module):
 
 
 if __name__ == '__main__':
-    # critic = PoCriticNetwork(
+    # critic = BlpnCritic(
     #     3, 128, nn.ReLU(), 4, 8, 128, 4, 2, 128, nn.ReLU(), 2, [128, 128], [nn.ReLU()] * 2, None)
     # x_critic = torch.randn(8, 3 + 4 * 8 + 2)
     # y_critic = critic(x_critic)
     # print(x_critic)
     # print(y_critic)
-    # actor = PoActorNetwork(3, 128, 4, 128, 4, 4, 2, 4, [128] * 4, [nn.Tanh()] * 4, nn.Tanh(), 2)
+    # actor = BlpnActor(3, 128, 4, 128, 4, 4, 2, 4, [128] * 4, [nn.Tanh()] * 4, nn.Tanh(), 2)
     # x_actor = torch.randn(4, 3 + 4 * 4)
     # y_actor = actor(x_actor)
     # print(x_actor)
